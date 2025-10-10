@@ -15,22 +15,26 @@
             height: 100vh;
             margin: 0;
         }
+
         .container {
             text-align: center;
             width: 90%;
             max-width: 600px;
         }
+
         h1 {
             font-size: 2.2em;
             margin-bottom: 6vh;
             font-weight: bold;
         }
+
         .buttons {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10vh;
             gap: 25px;
         }
+
         .button {
             background-color: red;
             color: white;
@@ -46,30 +50,45 @@
             flex: 1;
             max-width: 150px;
         }
+
         .button.white {
             background-color: white;
             color: black;
         }
+
         .button:active {
             background-color: white;
             color: red;
         }
+
+        .button.yellow-center {
+            background-color: yellow;
+            color: black;
+            margin: 0 auto;
+            display: block;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Control Sensor</h1>
+
         <div class="buttons">
             <button class="button" onclick="sendCommand('2Floors')">2Floors</button>
             <button class="button" onclick="sendCommand('3Floors')">3Floors</button>
-            <button class="button" onclick="sendCommand('UDF')">UD Floors</button>
-            <button class="button" onclick="sendCommand('Test')">Test</button>
+            <button class="button" onclick="sendCommand('Test')">Test connection</button>
         </div>
+
         <div class="buttons">
             <button class="button" onclick="sendCommand('forward')">Forward</button>
             <button class="button" onclick="sendCommand('back')">Back</button>
-            <button class="button" onclick="sendCommand('next_row')">Next Row</button>
-            <button class="button" onclick="sendCommand('done')">Done</button>
+            <button class="button" onclick="sendCommand('QR')">Next Row</button>
+        </div>
+
+        <div class="buttons" style="justify-content: center;">
+            <button class="button yellow-center" onclick="sendCommand('Ready')">!! Ready !!</button>
+            <button class="button yellow-center" onclick="sendCommand('clear')">!! Restat !!</button>
         </div>
     </div>
 
@@ -83,32 +102,51 @@
                 case '3Floors':
                     topic = '3F';
                     break;
-                case 'UDF':
-                    topic = 'UDF';
-                    break;
                 case 'forward':
                     topic = 'F';
                     break;
                 case 'back':
                     topic = 'B';
                     break;
-                case 'done':
+                case 'QR':
                     topic = 'QR';
                     break;
-                case 'next_row':
-                    topic = 'NEXT_ROW';
-                    break;
                 case 'Test':
-                    topic = 'T';
+                    topic = 'test';
+                    break;
+                case 'clear':
+                    topic = 'CLEAR';
+                    break;
+                case 'Ready':
+                    topic = 'READY';
                     break;
                 default:
                     console.error('Unknown command:', command);
                     return;
             }
 
-            localStorage.setItem('topic', topic);
+            fetch('/send_command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ topic: topic })
+            })
 
-            window.location.href = '/';
+            .then(response => response.json())
+
+            .then(data => {
+                if(data.status === 'success') {
+                    // alert('Command sent: ' + topic);
+                    window.location.href = '/index.html';
+                } else {
+                    alert('Failed to send command: ' + (data.message || 'Unknown error'));
+                }
+            })
+            
+            .catch(error => {
+                alert('Error sending command: ' + error);
+            });
         }
     </script>
 </body>

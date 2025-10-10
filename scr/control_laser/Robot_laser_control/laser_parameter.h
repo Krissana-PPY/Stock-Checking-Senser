@@ -8,21 +8,14 @@ const char* mqtt_client_id = "esp32-sensor";
 
 
 // MQTT topics
-
 // Robot Box
-
 const char* forward_topic = "F";
 const char* back_topic = "B";
 const char* done_topic = "done";
-// const char* lift_topic = "L";
-// const char* down_topic = "D";
-
-// Robot Box
 
 const char* twofloors_topic = "2F";
 const char* threefloors_topic = "3F";
 const char* fourfloors_topic = "4F";
-const char* UDFfloors_topic = "UDF";
 const char* test_topic = "test";
 const char* error_topic = "error";
 

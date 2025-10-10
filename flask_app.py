@@ -236,21 +236,16 @@ def PostStock(row_id, pallets_total):
     except Exception as e:
         logging.error(f"Error POST STOCK update: {e}")
 
-def DeleteRow(row_id):
+def DeleteDataInStock():
     """Send delete row command as JSON via HTTP POST."""
     current_date = datetime.now().strftime("%Y-%m-%d")
-    api_url =  url + "RowDelete"
-    payload = {
-        "type": "delete_row",
-        "row_id": row_id,
-        "update_date": current_date
-    }
+    api_url = url +"Stock/Data/" + current_date
     try:
-        response = requests.post(api_url, json=payload, verify=False)
+        response = requests.delete(api_url, verify=False)
         response.raise_for_status()
-        logging.info(f"POST delete row for ROW_ID: {row_id}.")
+        logging.info(f"Delete Data for Stock.")
     except Exception as e:
-        logging.error(f"Error POST delete row: {e}")
+        logging.error(f"Error delete Stock.: {e}")
 
 # MQTT Handlers to process incoming messages
 @mqtt.on_connect()
@@ -281,7 +276,7 @@ def HandleMqttMessage(client, userdata, message):
         for i in range(len(distance)):
             CalDistacetrue(distance[i], angle_y[i])
         average_distance = CalculateAverageDistance()
-        PostEachPallet(row_id, sub_row, average_distance, 1, 1)
+        PostEachPallet(row_id, sub_row, average_distance, angle_x, angle_y)
 
         if average_distance > 0:
             CalResultPallet(average_distance)
@@ -326,7 +321,6 @@ def HandleMqttMessage(client, userdata, message):
         if current_id <= 1:
             current_id = 1
         row_id, page = GetFirstRowId(current_id)
-        print(f"Going back to previous row: {row_id}")
         if row_id:
             socketio.emit('send_c_row', {'c_row_v': row_id})
         socketio.emit('set_zero', FormatAllZero(), namespace='/')
@@ -335,6 +329,17 @@ def HandleMqttMessage(client, userdata, message):
         row_id, page = GetFirstRowId(1)
         socketio.emit('send_c_row', {'c_row_v': row_id})
         print(f"Resetting to first row: {row_id}")
+
+    elif message.topic == "READY":
+        if current_id > 1:
+            DeleteDataInStock()
+            current_id = 0
+        elif current_id == 0:
+            client.publish("OK", payload="I am ready")
+            
+    elif message.topic == "CLEAR":
+        DeleteDataInStock()
+        current_id = 0
 
 # SocketIO Handlers to communicate with the client
 @socketio.on('connect')

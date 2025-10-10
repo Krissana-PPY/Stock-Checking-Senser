@@ -6,7 +6,7 @@
 #include <lwip/tcpip.h>
 
 // Enterprise WiFi credentials
-const char* ssid = "TBV-WiFi";
+const char* ssid = "";
 const char* username = "";
 const char* password = "";
 

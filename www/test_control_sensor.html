@@ -15,22 +15,26 @@
             height: 100vh;
             margin: 0;
         }
+
         .container {
             text-align: center;
             width: 90%;
             max-width: 600px;
         }
+
         h1 {
             font-size: 2.2em;
             margin-bottom: 6vh;
             font-weight: bold;
         }
+
         .buttons {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10vh;
             gap: 25px;
         }
+
         .button {
             background-color: red;
             color: white;
@@ -40,33 +44,52 @@
             border-radius: 1.5em;
             cursor: pointer;
             font-weight: bold;
+            min-width: 90px;
+            min-height: 48px;
             transition: background 0.2s;
             flex: 1;
-            width: 140px;
-            height: 60px;
+            max-width: 150px;
         }
-        
-        .button:hover {
+
+        .button.white {
+            background-color: white;
+            color: black;
+        }
+
+        .button:active {
             background-color: white;
             color: red;
         }
+
+        .button.yellow-center {
+            background-color: yellow;
+            color: black;
+            margin: 0 auto;
+            display: block;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Control Sensor</h1>
+
         <div class="buttons">
             <button class="button" onclick="sendCommand('2Floors')">2Floors</button>
             <button class="button" onclick="sendCommand('3Floors')">3Floors</button>
             <button class="button" onclick="sendCommand('Test')">Test connection</button>
         </div>
+
         <div class="buttons">
             <button class="button" onclick="sendCommand('forward')">Forward</button>
-            <button class="button" onclick="sendCommand('back')">Back ROW</button>
+            <button class="button" onclick="sendCommand('back')">Back</button>
             <button class="button" onclick="sendCommand('QR')">Next Row</button>
         </div>
-        <div class="buttons">
-            <button class="button" onclick="window.location.href='/index.html'">Back to Home</button>
+
+        <div class="buttons" style="justify-content: center;">
+            <button class="button yellow-center" onclick="sendCommand('Ready')">!! Ready !!</button>
+            <button class="button yellow-center" onclick="sendCommand('clear')">!! Restat !!</button>
+        </div>
     </div>
 
     <script>
@@ -89,12 +112,19 @@
                     topic = 'QR';
                     break;
                 case 'Test':
-                    topic = 'T';
+                    topic = 'test';
+                    break;
+                case 'clear':
+                    topic = 'CLEAR';
+                    break;
+                case 'Ready':
+                    topic = 'READY';
                     break;
                 default:
                     console.error('Unknown command:', command);
                     return;
             }
+
             fetch('/send_command', {
                 method: 'POST',
                 headers: {
@@ -102,7 +132,9 @@
                 },
                 body: JSON.stringify({ topic: topic })
             })
+
             .then(response => response.json())
+
             .then(data => {
                 if(data.status === 'success') {
                     // alert('Command sent: ' + topic);
@@ -111,6 +143,7 @@
                     alert('Failed to send command: ' + (data.message || 'Unknown error'));
                 }
             })
+            
             .catch(error => {
                 alert('Error sending command: ' + error);
             });

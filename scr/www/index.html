@@ -5,11 +5,12 @@
   <script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
   <style>
+
     body {
       font-family: 'PT Sans', sans-serif;
       background-color: #222020;
     }
-    
+
     .bodyDiv {
       text-align: center;
       margin-top: 50px;
@@ -19,12 +20,11 @@
       font-family: 'PT Sans', sans-serif;
     }
 
-    
     h1 {
       color: #ffffff;
       margin-bottom: 20px;
     }
-    
+
     .sensorDiv {
       display: flex;
       justify-content: center;
@@ -146,6 +146,7 @@
     #testButton:hover {
       background-color: #45a049;
     }
+    
   </style>
 </head>
 <body>
@@ -154,7 +155,7 @@
     <div class="sensorDiv">
       <div class="valueDiv">
         <!-- Current row name and code -->
-        <p><span id="c_row_v">Current Row</span></p> 
+        <p><span id="c_row_v">Current Row</span></p>
       </div>
     </div>
     <div class="pointGroupDiv">
@@ -279,7 +280,7 @@
     socket.on('send_point_7', function(data) {
       update_P7(data.point);
     });
-    
+
     function update_P7(point) {
       $('#point_7').text(point + ' PL.');
     }
@@ -354,33 +355,6 @@
     function update_row(row) {
       $('#row_v').text(row);
     }
-
-    // Send command from localStorage topic if exists
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const topic = localStorage.getItem('topic');
-        if (topic) {
-            localStorage.removeItem('topic');
-            setTimeout(() => {
-                fetch('/send_command', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({topic: topic}),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    if (data.status !== 'success') {
-                        console.error('Error:', data.message);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-            }, 1000);
-        }
-    });
   </script>
 </body>
 </html>

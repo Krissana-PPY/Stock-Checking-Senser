@@ -15,6 +15,15 @@ void setup() {
   Serial.println(WiFi.softAPIP());
 }
 
+int prevClientCount = 0;
+
 void loop() {
-  // ...existing code...
+  int clientCount = WiFi.softAPgetStationNum();
+  if (clientCount > prevClientCount) {
+    Serial.println("New device connected!");
+    Serial.print("Total connected devices: ");
+    Serial.println(clientCount);
+  }
+  prevClientCount = clientCount;
+  delay(1000); // Add a delay to avoid overwhelming the serial output
 }
