@@ -12,6 +12,7 @@ const char* mqtt_client_id = "esp32-sensor";
 const char* forward_topic = "F";
 const char* back_topic = "B";
 const char* done_topic = "done";
+const char* off_topic = "off";
 
 const char* twofloors_topic = "2F";
 const char* threefloors_topic = "3F";

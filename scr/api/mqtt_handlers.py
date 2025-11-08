@@ -46,7 +46,9 @@ def setup_mqtt(app):
             for i in range(len(globals_vars.distance)):
                 helpers.CalDistacetrue(globals_vars.distance[i], globals_vars.angle_y[i])
             average_distance = helpers.CalculateAverageDistance()
-            api_utils.PostEachPallet(row_id, globals_vars.sub_row, average_distance, 1, 1)
+            angle_x_float = [float(x) for x in globals_vars.angle_x]
+            angle_y_float = [float(y) for y in globals_vars.angle_y]
+            api_utils.PostEachPallet(row_id, globals_vars.sub_row, average_distance, angle_x_float, angle_y_float)
 
             if average_distance > 0:
                 helpers.CalResultPallet(average_distance)
@@ -105,10 +107,9 @@ def setup_mqtt(app):
             print(f"Resetting to first row: {row_id}")
 
         elif message.topic == "READY":
-            if current_id > 1:
+            if current_id == 0:
                 api_utils.DeleteDataInStock()
-                current_id = 0
-            elif current_id == 0:
+            elif current_id > 0:
                 client.publish("OK", payload="I am ready") 
 
         elif message.topic == "CLEAR":

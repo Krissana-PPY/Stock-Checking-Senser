@@ -41,9 +41,6 @@ volatile bool doneReceived = false;
 
 uint8_t RETRY = 0; 
 
-unsigned long lastTopicReceived = 0;
-const unsigned long topicTimeout = 60000;
-
 // Enumerations for motion and MPU states
 enum motion {OPEN = 1 , MEASURE, STATE, CLOSE};
 enum MPU  {rotation, facing_up};
@@ -114,7 +111,6 @@ void setup() {
 void reconnect_mqtt() {
   // Reconnect to MQTT broker if disconnected
   while (!client.connected()) {
-    laser_sensor_function(CLOSE);
     Serial.println("Connecting to MQTT...");
     if (client.connect(mqtt_client_id)) {
       Serial.println("Connected to MQTT");
@@ -125,7 +121,7 @@ void reconnect_mqtt() {
       client.subscribe(test_topic);
       client.subscribe(back_topic);
       client.subscribe(done_topic);
-      laser_sensor_function(OPEN);
+      client.subscribe(off_topic);
     } else {
       Serial.print("Failed to connect to MQTT. State: ");
       Serial.println(client.state());
@@ -371,7 +367,6 @@ void testsensor() {
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  lastTopicReceived = millis(); // reset timer on topic received
   String message;
   for (unsigned int i = 0; i < length; i++) {
     message += (char)payload[i];
@@ -389,6 +384,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
     doc["distance"] = "-1";
     char payload[200];
     serializeJson(doc, payload);
+  } else if (String(topic) == off_topic) {
+    laser_sensor_function(CLOSE);
   } else if (String(topic) == done_topic) {
     doneReceived = true;
   }
@@ -512,10 +509,4 @@ void loop() {
     reconnect_mqtt();
   }
   client.loop();
-
-  // Check for topic timeout
-  if (millis() - lastTopicReceived > topicTimeout) {
-    laser_sensor_function(CLOSE);
-    lastTopicReceived = millis();
-  }
 }

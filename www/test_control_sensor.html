@@ -89,6 +89,7 @@
         <div class="buttons" style="justify-content: center;">
             <button class="button yellow-center" onclick="sendCommand('Ready')">!! Ready !!</button>
             <button class="button yellow-center" onclick="sendCommand('clear')">!! Restat !!</button>
+            <button class="button yellow-center" onclick="sendCommand('off')">!! Off !!</button>
         </div>
     </div>
 
@@ -112,13 +113,16 @@
                     topic = 'QR';
                     break;
                 case 'Test':
-                    topic = 'test';
+                    topic = 'T';
                     break;
                 case 'clear':
                     topic = 'CLEAR';
                     break;
                 case 'Ready':
                     topic = 'READY';
+                    break;
+                case 'off':
+                    topic = 'off';
                     break;
                 default:
                     console.error('Unknown command:', command);

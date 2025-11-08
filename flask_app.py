@@ -276,7 +276,9 @@ def HandleMqttMessage(client, userdata, message):
         for i in range(len(distance)):
             CalDistacetrue(distance[i], angle_y[i])
         average_distance = CalculateAverageDistance()
-        PostEachPallet(row_id, sub_row, average_distance, angle_x, angle_y)
+        angle_x_float = [float(x) for x in angle_x]
+        angle_y_float = [float(y) for y in angle_y]
+        PostEachPallet(row_id, sub_row, average_distance, angle_x_float, angle_y_float)
 
         if average_distance > 0:
             CalResultPallet(average_distance)
